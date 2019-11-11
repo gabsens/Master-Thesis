@@ -15,7 +15,7 @@
 \usepackage{datetime}
 \usepackage{textcomp}
 \usepackage{color}
-\usepackage{hyperref}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue, urlcolor=blue]{hyperref}
 \usepackage{amsthm}
 \usepackage{upgreek}
 \usepackage{latexsym}
@@ -457,7 +457,7 @@ Assuming $X=\mathbb R^d$, $\alpha=\sum_{i=1}^n a_i \delta_{x_i}$ and $\beta=\sum
 	\begin{enumerate}
     \item Generate a connected graph $G$ whose nodes are the support points and whose edges are the Euclidean distances between points. The simplest and fastest way is to use the complete graph on the support points. To get a graph that is sensitive to the geometry of the support points, it is preferable to consider a $k$-NN graph, but it may not be connected. Even if $k$ is reasonably large, if there are two tightly-knit and distant clusters in the support points, it will have at least two components. This can be fixed by adding random edges between the connected components.
 
-    \item Compute a directed spanning tree $T$ on the graph. For our use in tree-Wasserstein, $G$ or $\mathcal T$ needs to be random.\\
+    \item Compute a directed spanning tree $T$ on the graph. For our use in tree-Wasserstein, $G$ or $T$ needs to be random.\\
     $\bullet$ BFS and DFS on a connected graph both generate spanning trees. We get random spanning trees simply by randomizing the starting node of the search. An interesting question is the distribution induced by this sampling method on spanning trees of $G$.\\
     $\bullet$ Wilson's algorithm \cite[Theorem~4.1]{lyons2017probability} is based on loop-erased random walks, with transition probabilities proportional to edge weights (or a function thereof). The probability of a spanning tree being sampled is the product of its edge weights.\\
     $\bullet$ Kruskal's or Prim's algorithm can be used to compute a minimum spanning tree, but these are deterministic algorithms (the minimum spanning tree is unique if all the edge weights are distinct).
@@ -529,11 +529,11 @@ If $P\ll Q$, this rewrites as $\int_\Omega \log\left(\frac{dP}{dQ}(w) \right) \f
 	The term $\kl(\pi\|\alpha\otimes \beta)$ in the objective forces the transportation plans $\pi$ to be absolutely continuous with respect to $\alpha\otimes \beta$. In general a coupling $\pi\in \Pi(\alpha,\beta)$ need not be dominated by $\alpha\otimes \beta$ (consider $\pi$ the uniform distribution on the diagonal of the unit rectangle $[0,1]\times [0,1]$ and $\alpha$, $\beta$ having $\mathcal U([0,1])$ distribution).
 \end{rem}
 
-The regularized problem also admits a dual formulation. A version of the dual problem was first stated in \cite{genevay2016stochastic}, without proof. A proof was added in \cite[Proposition~4]{genevay2019entropy} but it is purely formal and not rigorous. The recent paper \cite{clason2019entropic} provides an in-depth study of duality in the setting where $X=\mathbb R^d$ and the regularization is slightly modified:
+The regularized problem also admits a dual formulation. A version of the dual problem was first stated in \cite{genevay2016stochastic}, without proof. A proof was added in \cite[Proposition~4]{genevay2019entropy} but it is purely formal and not rigorous. The recent paper \cite{clason2019entropic} provides an in-depth study of duality in the setting where $X=\mathbb R^d$ and the regularization is modified:
 	\begin{equation*}
 	\inf_{\pi\in \Pi(\alpha, \beta)} \int_{X\times Y} c(x,y) d\pi(x,y) + \varepsilon\kl(\pi\|\lambda_d\otimes \lambda_d)
 	\end{equation*}
-They make heavy use of functional analysis and I plan on spending time on this paper in the coming weeks. In \cite{genevay2016stochastic,genevay2018sample,genevay2019entropy}, duality is stated as follows:
+The authors make heavy use of functional analysis and I plan on spending time on this paper in the coming weeks. In \cite{genevay2016stochastic,genevay2018sample,genevay2019entropy}, duality is stated as follows:
 
 \begin{prop}
 	Let $X,Y$ be arbitrary metric spaces, and let $\mathcal C(X)$, $\mathcal C(Y)$ denote the spaces of continuous functions with real values. The convex dual of (\ref{rKP}) is 
@@ -574,7 +574,7 @@ The space in which the dual is optimized certainly depends on the regularity of 
 \end{thm}
 
 \begin{proof}
-	Let $g$ denote the objective function in Proposition \ref{discretereg}. $g$ is strictly convex with domain $\dom g=(\mathbb R_+)^{n\times m}$, $g$ is continuous on $\dom g$ and coercive. The constraint set is compact, thus the infimum is actually a minimum, and there is a unique solution.\\
+	Let $g$ denote the objective function in Proposition \ref{discretereg}. $g$ is strictly convex with domain $\dom g=(\mathbb R_+)^{n\times m}$, $g$ is continuous on $\dom g$, and coercive. The constraint set is compact, thus the infimum is actually a minimum, and there is a unique solution.\\
 	Since there are only two equality constraints that are linear in $P$, strong duality holds. Let \\$L(P,\lambda,\mu)=\sum_{i=1}^n\sum_{j=1}^m c(x_i,y_j)P_{ij} + \varepsilon \sum_{i=1}^n\sum_{j=1}^m P_{ij}\log\left(\frac{P_{ij}}{a_i b_j} \right) - \lambda^T(P\mathbbm 1_m-a) - \mu^T(P^T \mathbbm 1_n -b)$ be the Lagrange function. For fixed $\lambda, \mu$, $L$ is convex in $P$ and $P_{ij}^* =a_i b_j \exp\left(\frac{\lambda_i+\mu_j-c(x_i,y_j)}{\varepsilon}-1 \right)$ is a critical point, so the dual function is \begin{center}
 		$g(\lambda, \mu) = L(P^*,\lambda,\mu) = \sum_{i=1}^n \lambda_i a_i+\sum_{j=1}^m \mu_j b_j - \varepsilon \sum_{i=1}^n\sum_{j=1}^m a_i b_j \exp\left(\frac{\lambda_i+\mu_j-c(x_i,y_j)}{\varepsilon}-1 \right)$
 	\end{center}
@@ -585,7 +585,9 @@ The space in which the dual is optimized certainly depends on the regularity of 
 \end{proof}
 
 
-Assuming the supremum in the dual is attained for some $(\lambda^*,\mu^*)$, a result in \\ \cite[Section~5.5.2]{boyd2004convex} implies that the optimal $P^*$ satisfies\\ $P_{ij}^* =a_i b_j \exp\left(\frac{\lambda_i^*+\mu_j^*-c(x_i,y_j)}{\varepsilon}-1 \right) = (a_ie^{\lambda_i^*/\varepsilon-1/2})e^{-c(x_i,y_j)/\varepsilon}(b_je^{\mu_j^*/\varepsilon-1/2})$. Letting $K\in (\mathbb R_+^*)^{n\times m}$ be the matrix with entries $e^{-c(x_i,y_j)/\varepsilon}$, we infer that there exists $u\in (\mathbb R_+^*)^n$ and $v\in  (\mathbb R_+^*)^m$ such that $P^* = \diag(u)K\diag(v)$. Conversely, suppose that we find $u$ and $v$ such that $\diag(u)K\diag(v)\in U(a,b)$. Assuming that KKT conditions are applicable (this is not guaranteed since $\dom g$ is not open), they are sufficient (since the problem is convex and the constraints are linear) and we can conclude that $\diag(u)K\diag(v)$ is optimal.
+Since the problem is convex and the constraints are linear, according to \cite[Section~5.2.3]{boyd2004convex} the supremum in the dual is attained for some $(\lambda^*,\mu^*)$. \cite[Section~5.5.2]{boyd2004convex} then implies that the optimal $P^*$ satisfies \begin{center}
+	$P_{ij}^* =a_i b_j \exp\left(\frac{\lambda_i^*+\mu_j^*-c(x_i,y_j)}{\varepsilon}-1 \right) = (a_ie^{\lambda_i^*/\varepsilon-1/2})e^{-c(x_i,y_j)/\varepsilon}(b_je^{\mu_j^*/\varepsilon-1/2})$
+\end{center} Letting $K\in (\mathbb R_+^*)^{n\times m}$ be the matrix with entries $e^{-c(x_i,y_j)/\varepsilon}$, we infer that there exists $u\in (\mathbb R_+^*)^n$ and $v\in  (\mathbb R_+^*)^m$ such that $P^* = \diag(u)K\diag(v)$. By Sinkhorn's theorem \cite{idel2016review}, such a $P^*\in U(a,b)$ is unique, so if we find $u$ and $v$ such that $\diag(u)K\diag(v)\in U(a,b)$, we can conclude that $\diag(u)K\diag(v)$ is optimal.
 \par Therefore, the problem boils down to finding $u\in (\mathbb R_+^*)^n$ and $v\in  (\mathbb R_+^*)^m$ such that $\diag(u)K\diag(v)\in U(a,b)$. This is known as a \textbf{matrix scaling} problem and there is a wealth of literature on this topic. The constraint rewrites as $u \odot (Kv) = a$ and $v \odot (K^Tu) =b$, and this motivates the iterative Sinkhorn's algorithm: let $v^{(0)}=\mathbbm 1_m$ and \begin{center}
 	$\displaystyle u^{(\ell+1)} = \frac{a}{K v^{(\ell)}}$ and $\displaystyle v^{(\ell+1)} = \frac{b}{K^T u^{(\ell+1)}}$
 \end{center} where the quotients are entrywise.
@@ -595,13 +597,13 @@ Assuming the supremum in the dual is attained for some $(\lambda^*,\mu^*)$, a re
 \hspace{\parindent} The algorithmic complexity of Sinkhorn's algorithm is a natural object of study: given $\gamma>0$, how many iterations are sufficient to get a $\hat P\in U(a,b)$ such that \begin{center}
 	$\displaystyle \sum_{i=1}^n\sum_{j=1}^m c(x_i,y_j)\hat P_{ij} \leq \inf_{P\in U(a,b)} \sum_{i=1}^n\sum_{j=1}^m c(x_i,y_j)P_{ij} + \gamma$
 \end{center}
-Note that we seek to approximate the optimal value of the un-regularized problem, and Sinkhorn's algorithm is based on the regularized version of the problem. Of course, the regularization parameter $\varepsilon$ is chosen as a function of $\gamma$.\\
+Note that we seek to approximate the optimal value of the un-regularized problem, and Sinkhorn's algorithm is based on the regularized version of the problem. Of course, the regularization parameter $\varepsilon$ is chosen as a function of $\gamma$.
 \par The algorithmic complexity is still an active topic of research. In \cite{altschuler2017near} it was shown that it can be done in $O\left(\frac{n^2\log n}{\gamma^3} \right)$ time. In \cite{dvurechensky2018computational} it was reduced to $O\left(\frac{n^2\log n}{\gamma^2} \right)$.
 
 While reading \cite{altschuler2017near} I noticed that something was wrong in the proof of Lemma 3. Their proof yields an upper bound $s+\log\left(\frac 1\ell\right)$, instead of the claimed $\log\left(\frac s\ell\right)$. In a few days, I managed to devise a complicated proof for an upper bound in $\log\left(1+\frac {2s}{\ell}\right)$. After some time, I noticed there was also an issue in Algorithm 3.  In the case $k=1$, $$A^{(1)}:=\mathbf{D}\left(\exp \left(x^{1}\right)\right) A \; \mathbf{D}\left(\exp \left(y^{1}\right)\right) = \mathbf{D} \left(\frac{r_i}{r_i(\frac{A}{\|A\|_1})}\right)A = \|A\|_1 \mathbf{D} \left(\frac{r_i}{r_i(A)}\right)A$$ 
 Hence $\|A^{(1)}\|_1 = \|A\|_1$ and Lemma 2 fails for $k=2$, since its proof relies critically on $\|A^{(1)}\|_1=1$. I noted that it could be fixed by defining $y^{0}:=-\log \|A\|_1$. Incidentally, this also fixes the issue in Lemma 3. 
 \par I sent an email to the authors and I got a reply from Altschuler who recognized the issues and proposed to set $A^{(k)}=\mathbf{D}\left(\exp \left(x^{1}\right)\right) A^{(0)} \; \mathbf{D}\left(\exp \left(y^{1}\right)\right)$ in line 11 of Algorithm 3, and to replace $A_{ij}$ with $A_{ij}^{(0)}$ in the definition of the potential function.
-
+\par I also spent time reading the details of \cite{dvurechensky2018computational} and thinking of a way to obtain sharper bounds. 
 
 
 
@@ -610,7 +612,7 @@ Hence $\|A^{(1)}\|_1 = \|A\|_1$ and Lemma 2 fails for $k=2$, since its proof rel
 \chapter{Statistical properties of Optimal Transport}
 
 \section{Introduction}
-\hspace{\parindent} In this chapter we consider measures on $\mathbb R^d$. In practice, the measure $\alpha$ is only known through i.i.d samples $(X_1,\ldots,X_n)\sim \alpha^{\otimes n}$. Wasserstein distances can be used to quantify how close $\alpha$ is to the empirical measure $\hat \alpha_n:= \frac 1n \sum_{i=1}^n \delta_{X_i}$. The rate at which $W_1(\alpha, \hat \alpha_n)$ goes to $0$ was first studied in \cite{dudley1969speed} and the properties of $W_p(\alpha, \hat \alpha_n)$ remain an active topic of research \cite{weed2019sharp}.
+\hspace{\parindent} In this chapter we consider measures on $\mathbb R^d$. In practice, the measure $\alpha$ is only known through the empirical measure $\hat \alpha_n:= \frac 1n \sum_{i=1}^n \delta_{X_i}$ where $(X_1,\ldots,X_n)$ are i.i.d samples $\sim \alpha^{\otimes n}$. A straightforward consequence of Glivenko-Cantelli theorem is that almost surely $\hat \alpha_n \Rightarrow \alpha$. Wasserstein distances can be used to measure the speed of this convergence. The rate at which $W_1(\alpha, \hat \alpha_n)$ goes to $0$ was first studied in \cite{dudley1969speed} and the properties of $W_p(\alpha, \hat \alpha_n)$ remain an active topic of research \cite{weed2019sharp}.
 
 \par The paper \cite{genevay2018sample} studies the statistical properties of regularized optimal transport with an arbitrary cost function under the strong assumption that the measures have bounded supports. The recent paper \cite{mena2019statistical} generalizes the previous one to sub-gaussian measures, but the cost is restrained to the squared Euclidean norm (in other words, they consider the $2$-Wasserstein distance).
 
@@ -619,14 +621,14 @@ Hence $\|A^{(1)}\|_1 = \|A\|_1$ and Lemma 2 fails for $k=2$, since its proof rel
 \newpage
 \section{Extension of Theorem 1 in \cite{genevay2018sample}}
 
-\hspace{\parindent} We use the same notations as in \cite{genevay2018sample} and we suppose that the cost function is $c(x,y):= \|x-y\|_2^p$ where $p\geq 1$. In other words, we consider $p$-Wasserstein distances. Unlike \cite{mena2019statistical} we do not assume that the measures are sub-gaussian, we only suppose that they have finite moments of sufficiently large order.
+\hspace{\parindent} We use the same notations as in \cite{genevay2018sample} and we suppose that the cost function is $c(x,y):= \|x-y\|_2^p$ where $p\geq 1$. In other words, we consider $p$-Wasserstein distances. Unlike \cite{mena2019statistical} we do not assume that the measures are sub-gaussian, we only suppose that they have finite moments of sufficiently large order. The theorem we consider is not covered or generalized in \cite{mena2019statistical}.
 
 \subsubsection*{1. Some facts}
 \hspace{\parindent}The bound $0 \leqslant W_{\varepsilon}(\alpha, \beta)-W(\alpha, \beta) \leqslant\left(C(\pi^{\Delta})-C(\pi_{0})\right)+\varepsilon H(\pi^{\Delta})$ is still valid for measures with unbounded supports. 
 
-It is more convenient for later computations to suppose that the cube $Q_0^\Delta$ is centered at the origin. Therefore, we deviate a bit from \cite{genevay2018sample} and define for $i\in \mathbb Z^d$, $$Q_i^\Delta := \left[\Delta\left(i_1-\frac 12\right), \Delta\left(i_1+\frac 12\right)  \right)\times \ldots \times \left[\Delta\left(i_d-\frac 12\right), \Delta\left(i_d+\frac 12\right)  \right)$$
+It is more convenient for later computations to suppose that the cube $Q_0^\Delta$ is centered at the origin. Therefore, we deviate from \cite{genevay2018sample} and define for $i\in \mathbb Z^d$, $$Q_i^\Delta := \left[\Delta\left(i_1-\frac 12\right), \Delta\left(i_1+\frac 12\right)  \right)\times \ldots \times \left[\Delta\left(i_d-\frac 12\right), \Delta\left(i_d+\frac 12\right)  \right)$$
 
-We define the block approximation $\pi^{\Delta}$ as in \cite{genevay2018sample}.
+We define the block approximation $\pi^{\Delta}$ as in \cite{genevay2018sample} (see the definition there).
 
 \begin{prop}
 	$\pi^{\Delta}$ is dominated by $\alpha\otimes \beta$ and 
@@ -837,7 +839,7 @@ It is remarkable that this bound is independent of $\alpha$.
 In~\eqref{4} it remains to bound $$\sum_{\substack{i\\ \|i\|_\infty > M}} \alpha(Q_i^\Delta)\log\left(\frac{1}{\alpha(Q_i^\Delta)}\right)$$
 
 \begin{prop}
-	Suppose $\alpha$ has a moment of order $q$ for $q$ sufficiently large and $M\geq 1$. Then 
+	Suppose $\alpha$ has a moment of order $q$ for $q$ sufficiently large. Let $X$ be a random vector with distribution $\alpha$ and $\displaystyle M\geq \frac{2}{\Delta}\left(eE(\|X\|_2^q) \right)^{1/q}$. Then 
 \begin{align*}
 &\sum_{\substack{i\\ \|i\|_\infty > M}} \alpha(Q_i^\Delta)\log\left(\frac{1}{\alpha(Q_i^\Delta)}\right)\\
 &\leq 
@@ -849,7 +851,7 @@ In~\eqref{4} it remains to bound $$\sum_{\substack{i\\ \|i\|_\infty > M}} \alpha
 \end{prop}
 
 \begin{proof}
-	Let $X$ be a random vector with distribution $\alpha$. Note that 
+	Note that 
 $$\begin{aligned}
 \alpha(Q_i^\Delta) &= P(X\in Q_i^\Delta)\\ &\leq P(\|X\|_2\geq \frac{\Delta}{2} \|i\|_2)\\
 &\leq \frac{E(\|X\|_2^q)\; 2^q}{\Delta^q}\frac{1}{\|i\|_2^q}
@@ -933,7 +935,7 @@ It remains to pick an $M$ that minimizes the RHS. After this is done, it suffice
 
 \section{Next steps}
 
-\hspace{\parindent} We are currently investigating whether we can generalize \cite{mena2019statistical} to the $p$-Wasserstein and to the case of measures with finite moments.
+\hspace{\parindent} We are currently investigating whether we can generalize \cite{mena2019statistical} to the $p$-Wasserstein and to the case of measures with finite moments. As stated in Section 3.1, it is important to understand to which dual potentials belong.
 
 \newpage 
 \bibliographystyle{apalike}
