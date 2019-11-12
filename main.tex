@@ -33,10 +33,11 @@
 \newtheorem{corol}[defi]{Corollary}
 \newtheorem{lemme}[defi]{Lemma}
 \newtheorem{prop}[defi]{Proposition}
-
+\newtheorem*{thm*}{Theorem}
 
 \theoremstyle{remark}
 \newtheorem{rem}[defi]{Remark}
+
 
 
 
@@ -45,13 +46,13 @@
 \DeclareMathOperator{\kl}{KL}
 \DeclareMathOperator{\tv}{TV}
 \DeclareMathOperator{\data}{data}
-\DeclareMathOperator{\id}{Id}
 \DeclareMathOperator{\lip}{Lip}
 \DeclareMathOperator*{\diam}{diam}
 \DeclareMathOperator{\tw}{TW}
 \DeclareMathOperator{\sgn}{sign}
 \DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\id}{id}
 
 
 
@@ -75,9 +76,9 @@
 \begin{minipage}{0.5\textwidth}
   \begin{flushright} 
   \Large
-    ENSAE 2\textsuperscript{ème} année\\
-    \textit{Stage d'application}\\
-    \textit{Année scolaire 2018-2019}
+    MVA\\
+    \textit{Master's Thesis}\\
+    \textit{School year 2018-2019}
   \end{flushright}
 \end{minipage}
 
@@ -103,7 +104,7 @@
 \noindent
 \begin{minipage}{0.5\textwidth}
   \begin{flushright} \Large
-    Maîtres de stage : Marco \textsc{Cuturi}\\
+    Supervisors : Marco \textsc{Cuturi}\\
     et Victor-Emmanuel \textsc{Brunel}\\
     13/06/2019 - 06/12/2019
   \end{flushright}
@@ -113,11 +114,10 @@
 %%%%%%%%%%
 
 \restoregeometry
-\newpage
+\newpage\phantom{blabla}
 
 \tableofcontents
-\newpage
-
+\newpage\phantom{blabla}
 \onehalfspacing
 
 %%%%%%%%%%
@@ -127,7 +127,8 @@
 
 \hspace{\parindent}This report summarizes my research internship at CREST, the topic of which was optimal transport. It is an extensive field of research, at the intersection between probability theory, analysis and geometry. The cost of entry into this theory is high, and I spent a considerable amount of time getting up to speed with the basics and browsing the literature.\\
 \par This report starts with a self-contained introduction to optimal transport, so that the reader is equipped with enough knowledge to understand the rest. It is followed by an exposition of the internship's research topics: tree metrics, the algorithmic complexity of Sinkhorn's algorithm and the statistical properties of optimal transport.\\
-\par Whenever a reference gave a claim without proof, or whenever I found the proof to be lacking in rigor, I chose to write my own. All the proofs in the report are my own work.
+\par Whenever a reference gave a claim without proof, or whenever I found the proof to be lacking in rigor, I chose to write my own. All the proofs in the report are my own work.\\
+\par Original contributions are my implementation of the tree-Wasserstein distance, the correction of mistakes in \cite{altschuler2017near} and the Theorem \ref{thmgen}, which is a significant generalization of Theorem 1 in \cite{genevay2018sample}.
 
 %%%%%%%%%%
 % Fin introduction
@@ -451,7 +452,7 @@ It turns out that $\tw(\alpha,\beta)$ has a nice closed form. This owes much to 
 
 \hspace{\parindent}
 The beginning of the internship was dedicated to implementing the tree-Wasserstein. Note that the authors of \cite{le2019tree} did not release their code, nor did they give pseudo-code for the tree-Wasserstein in their paper.\\
-A computational challenge in their approach is that they consider measures $\alpha=\sum_{i=1}^n a_i \delta_{x_i}$ and $\beta=\sum_{j=1}^m b_j \delta_{y_j}$ but the tree $T$ is not given \textit{a priori}. Instead they propose methods to sample trees whose nodes are the support points of the measures. We explored and implemented other methods of sampling.
+A computational challenge in their approach is that they consider measures $\alpha=\sum_{i=1}^n a_i \delta_{x_i}$ and $\beta=\sum_{j=1}^m b_j \delta_{y_j}$ but the tree $T$ is not given \textit{a priori}. Instead they propose methods to sample trees whose nodes are the support points of the measures. We explored and implemented other methods of sampling using the Python package \verb!NetworkX!.
 
 Assuming $X=\mathbb R^d$, $\alpha=\sum_{i=1}^n a_i \delta_{x_i}$ and $\beta=\sum_{j=1}^m b_j \delta_{y_j}$ we:
 	\begin{enumerate}
@@ -501,8 +502,21 @@ We provide cost analyses for both types of graphs in Table \ref{tab:2} and \ref{
 
 Once the tree is constructed, the time complexity for computing $\tw(\alpha,\beta)$ is $\Theta(n+m)$. This is much better than the $O((n+m)nm \log^2(n+m))$ of LP solvers.
 \\
-\par The goal of the internship was to adapt the notion of sliced Wasserstein barycenters developed in \cite{bonneel2015sliced} to the tree-Wasserstein. As explained above, trees depend on the measures $\alpha$ and $\beta$ because the support points must be contained in their nodes. On the contrary, sliced Wasserstein is based on sampling random lines in $\mathbb R^d$ and projecting the support points on those lines (so the lines are independent of $\alpha$ and $\beta$). Because of this significant difference, I was not able to come up with a notion of tree-sliced Wasserstein barycenters.
+\par The goal of the internship was to adapt the notion of sliced Wasserstein barycenters developed in \cite{bonneel2015sliced} to the tree-Wasserstein. As explained above, trees depend on the measures $\alpha$ and $\beta$ because the support points must be contained in their nodes. On the contrary, sliced Wasserstein is based on sampling random lines in $\mathbb R^d$ and projecting the support points on those lines (so the lines are independent of $\alpha$ and $\beta$). Because of this significant difference, I was not able to come up with a notion of tree-sliced Wasserstein barycenters. Such a notion was recently proposed in \cite{le2019scalable}, but I have not had time to look into it.
+\\
+\par Given a ground metric $d$, two discrete measures $\alpha, \beta$ and a tree $T$, the authors of \cite{le2019tree} do not study the link between $\tw(\alpha,\beta)$ and $W_1(\alpha,\beta)$. If the tree $T$ is sufficiently well-chosen, we expect that $\tw(\alpha,\beta)$ is not too far from the true $1$-Wasserstein.
+\par The identity mapping $\id: (X,d)\to (T,d_T)$ is a \textbf{metric embedding}. We define the expansion of $\id$ as $\sup_{x\neq y\in X} \frac{d_T(x,y)}{d(x,y)}$, its contraction as $\sup_{x\neq y\in X} \frac{d(x,y)}{d_T(x,y)}$ and its distortion as the product of the expansion and the contraction. Equivalently, the distortion of $\id$ is the minimum $\lambda\geq 1$ such that \begin{center}
+	$\exists\mu>0, \forall (x,y)\in X, \mu d_T(x,y)\leq d(x,y) \leq \lambda \mu d_T(x,y)$
+\end{center}
+A desirable tree is a $T$ such that $\id$ has low distortion. It is not always possible to construct such a tree: in \cite{rabinovich1998lower} it is proven that any embedding of the $n$-point cycle $C_n$ into a tree metric has distortion at least $\frac n3 -1$. \textbf{Probabilistic embeddings} are a possible workaround \cite{Bartal19}. The paper \cite{fakcharoenphol2004tight} provides a way of sampling trees with distortion $O(\log n)$ (sometimes referred to as FRT trees because of the author's initials).
+\par When browsing the literature on tree metrics, I noticed that the paper \cite{leeb2018approximating} makes the connection between FRT trees and the approximation of $W_1(\alpha,\beta)$ by $\tw(\alpha,\beta)$. Numerical experiments carried out on the MNIST dataset show that both quantities are not far from each other (see Figure \ref{leeb})
 
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.3]{leeb}
+\caption{True $W_1$ versus approximate $W_1$, using 25 trees, from \cite{leeb2018approximating}}
+\label{leeb}
+\end{figure}
 
 \chapter{Regularized Optimal Transport}
 
@@ -622,6 +636,15 @@ Hence $\|A^{(1)}\|_1 = \|A\|_1$ and Lemma 2 fails for $k=2$, since its proof rel
 \section{Extension of Theorem 1 in \cite{genevay2018sample}}
 
 \hspace{\parindent} We use the same notations as in \cite{genevay2018sample} and we suppose that the cost function is $c(x,y):= \|x-y\|_2^p$ where $p\geq 1$. In other words, we consider $p$-Wasserstein distances. Unlike \cite{mena2019statistical} we do not assume that the measures are sub-gaussian, we only suppose that they have finite moments of sufficiently large order. The theorem we consider is not covered or generalized in \cite{mena2019statistical}.
+
+We prove the following theorem.
+\begin{thm*}
+	Let $\alpha,\beta$ be probability measures on $\mathbb R^d$ and $p\geq 1$. Suppose $\alpha$ has a moment of order $\max(d+1,p)$ and $\beta$ has a moment of order $p$. Then, as $\varepsilon\to 0$, the following inequality on the $p$-Wasserstein holds: 
+	\begin{center}
+		$0 \leqslant W_{p,\varepsilon}^p(\alpha, \beta)-W_p^p(\alpha, \beta) \lesssim \varepsilon \log\left(\frac 1{\varepsilon} \right)$
+	\end{center}
+	where the sign $\lesssim$ hides constants depending on $d, p$ and the moments of $\alpha$ and $\beta$.
+\end{thm*}
 
 \subsubsection*{1. Some facts}
 \hspace{\parindent}The bound $0 \leqslant W_{\varepsilon}(\alpha, \beta)-W(\alpha, \beta) \leqslant\left(C(\pi^{\Delta})-C(\pi_{0})\right)+\varepsilon H(\pi^{\Delta})$ is still valid for measures with unbounded supports. 
@@ -778,7 +801,7 @@ C(\pi^{\Delta})-C(\pi_{0})\leq
 2pd^{p/2}\Delta^p + 2^{p}p \sqrt d \Delta \left(\int \|x\|_2^{p-1}d\alpha(x)+ \int \|y\|_2^{p-1}d\beta(y)\right) \quad &\text{if } p< 2 \tag{3} \label{3}
 \end{cases}
 \end{equation*}
-\newpage
+
 
 \subsubsection*{3. Upper bound on $H(\pi^\Delta)$}
 
@@ -931,7 +954,30 @@ d\log(2\lfloor M \rfloor + 1) +
 \right) \tag{6} \label{6}
 \end{align*}
 
-It remains to pick an $M$ that minimizes the RHS. After this is done, it suffices to sum~\eqref{6} and~\eqref{3}, and to pick a $\Delta$ that minimizes the sum. Computing the optimal $M$ and $\Delta$ is not possible. However, reasonable choices of $M$ and $\Delta$ are easy to find with heuristics (and up to multiplicative constants). In the end, we find an upper bound in $O\left(\varepsilon \log\left(\frac 1\varepsilon \right)\right)$, as in \cite{genevay2018sample}.
+It remains to pick an $M$ that minimizes the RHS. The optimal $M$ cannot be found computationally, however it is not difficult to find a reasonable choice (up to multiplicative constants). Remember that we assumed $M\geq 1$ and $\displaystyle M\geq \frac{2}{\Delta}\left(eE(\|X\|_2^q) \right)^{1/q}$. Because of the second assumption, $M$ is expected to be quite large, so that~\eqref{6} is approximately \begin{center}
+	$H^{\Delta}(\alpha)\lesssim d \log M  + \frac {C\log M}{\Delta^q M^{q-d}}$
+\end{center}
+It is minimized in $M$ when both summands have the same order, i.e.\ when $M\propto \frac{1}{\Delta^{\frac q{q-d}}}$. Plugging this choice of $M$ back in~\eqref{6} yields for $q\in (d,d+\frac d{C_1})$ \begin{center}
+	$H^{\Delta}(\alpha)\lesssim d \log\left(\frac{1}{\Delta^{\frac q{q-d}}} \right)  + C_1 q \log \Delta = \frac{q(d-C_1(q-d))}{q-d} \log\left(\frac 1\Delta\right)$
+\end{center}
+Together with~\eqref{3}, this yields \begin{center}
+	$0 \leqslant W_{p,\varepsilon}^p(\alpha, \beta)-W_p^p(\alpha, \beta) \lesssim C_2 \Delta^p + C_3 \Delta + \varepsilon \frac{q(d-C_1(q-d))}{q-d} \log\left(\frac 1\Delta\right)$ 
+\end{center}
+As $\varepsilon$ goes to $0$, the optimal $\Delta$ is expected to go to $0$ as well, so that $C_2 \Delta^p$ is negligible and the bound turns into
+\begin{center}
+	$0 \leqslant W_{p,\varepsilon}^p(\alpha, \beta)-W_p^p(\alpha, \beta) \lesssim C_4 \Delta + \varepsilon \frac{q(d-C_1(q-d))}{q-d} \log\left(\frac 1\Delta\right)$ 
+\end{center}
+
+This is similar to what \cite{genevay2018sample} obtains, and we conclude similarly with the following theorem.
+
+\begin{thm}\label{thmgen}
+	Let $\alpha,\beta$ be probability measures on $\mathbb R^d$ and $p\geq 1$. Suppose $\alpha$ has a moment of order $\max(d+1,p)$ and $\beta$ has a moment of order $p$. Then, as $\varepsilon\to 0$, the following inequality on the $p$-Wasserstein holds: 
+	\begin{center}
+		$0 \leqslant W_{p,\varepsilon}^p(\alpha, \beta)-W_p^p(\alpha, \beta) \lesssim \varepsilon \log\left(\frac 1{\varepsilon} \right)$
+	\end{center}
+	where the sign $\lesssim$ hides constants depending on $d, p$ and the moments of $\alpha$ and $\beta$.
+\end{thm}
+
 
 \section{Next steps}
 
