@@ -592,7 +592,7 @@ The space in which the dual is optimized certainly depends on the regularity of 
 	Since there are only two equality constraints that are linear in $P$, strong duality holds. Let \\$L(P,\lambda,\mu)=\sum_{i=1}^n\sum_{j=1}^m c(x_i,y_j)P_{ij} + \varepsilon \sum_{i=1}^n\sum_{j=1}^m P_{ij}\log\left(\frac{P_{ij}}{a_i b_j} \right) - \lambda^T(P\mathbbm 1_m-a) - \mu^T(P^T \mathbbm 1_n -b)$ be the Lagrange function. For fixed $\lambda, \mu$, $L$ is convex in $P$ and $P_{ij}^* =a_i b_j \exp\left(\frac{\lambda_i+\mu_j-c(x_i,y_j)}{\varepsilon}-1 \right)$ is a critical point, so the dual function is \begin{center}
 		$g(\lambda, \mu) = L(P^*,\lambda,\mu) = \sum_{i=1}^n \lambda_i a_i+\sum_{j=1}^m \mu_j b_j - \varepsilon \sum_{i=1}^n\sum_{j=1}^m a_i b_j \exp\left(\frac{\lambda_i+\mu_j-c(x_i,y_j)}{\varepsilon}-1 \right)$
 	\end{center}
-		With the change of variable $\lambda \leftarrow \lambda-\frac{\varepsilon}2$, $\mu \leftarrow \mu-\frac{\varepsilon}2$, the dual problem is equivalent to
+		With the change of variable $\lambda \leftarrow \lambda-\frac{\varepsilon}2 \mathbbm 1_n$, $\mu \leftarrow \mu-\frac{\varepsilon}2 \mathbbm 1_m$, the dual problem is equivalent to
 	\begin{center}
 		$\displaystyle \sup_{\substack{\lambda\in \mathbb R^n\\ \mu\in \mathbb R^m}} \sum_{i=1}^n \lambda_i a_i+\sum_{j=1}^m \mu_j b_j - \varepsilon \sum_{i=1}^n\sum_{j=1}^m a_i b_j \exp\left(\frac{\lambda_i+\mu_j-c(x_i,y_j)}{\varepsilon}\right) + \varepsilon$
 	\end{center}
@@ -635,7 +635,7 @@ Hence $\|A^{(1)}\|_1 = \|A\|_1$ and Lemma 2 fails for $k=2$, since its proof rel
 \newpage
 \section{Extension of Theorem 1 in \cite{genevay2018sample}}
 
-\hspace{\parindent} We use the same notations as in \cite{genevay2018sample} and we suppose that the cost function is $c(x,y):= \|x-y\|_2^p$ where $p\geq 1$. In other words, we consider $p$-Wasserstein distances. Unlike \cite{mena2019statistical} we do not assume that the measures are sub-gaussian, we only suppose that they have finite moments of sufficiently large order. The theorem we consider is not covered or generalized in \cite{mena2019statistical}.
+\hspace{\parindent} We suppose that the cost function is $c(x,y):= \|x-y\|_2^p$ where $p\geq 1$. In other words, we consider $p$-Wasserstein distances. We let $W_{p,\varepsilon}^p(\alpha, \beta)$ denote the minimum of \ref{rKP} with regularization parameter $\varepsilon$. Unlike \cite{mena2019statistical} we do not assume that the measures are sub-gaussian, we only suppose that they have finite moments of sufficiently large order. The theorem we consider is not covered or generalized in \cite{mena2019statistical}.
 
 We prove the following theorem.
 \begin{thm*}
@@ -647,7 +647,7 @@ We prove the following theorem.
 \end{thm*}
 
 \subsubsection*{1. Some facts}
-\hspace{\parindent}The bound $0 \leqslant W_{\varepsilon}(\alpha, \beta)-W(\alpha, \beta) \leqslant\left(C(\pi^{\Delta})-C(\pi_{0})\right)+\varepsilon H(\pi^{\Delta})$ is still valid for measures with unbounded supports. 
+\hspace{\parindent}The bound $0 \leqslant W_{p,\varepsilon}^p(\alpha, \beta)-W_p^p(\alpha, \beta) \leqslant\left(C(\pi^{\Delta})-C(\pi_{0})\right)+\varepsilon H(\pi^{\Delta})$ is still valid for measures with unbounded supports. 
 
 It is more convenient for later computations to suppose that the cube $Q_0^\Delta$ is centered at the origin. Therefore, we deviate from \cite{genevay2018sample} and define for $i\in \mathbb Z^d$, $$Q_i^\Delta := \left[\Delta\left(i_1-\frac 12\right), \Delta\left(i_1+\frac 12\right)  \right)\times \ldots \times \left[\Delta\left(i_d-\frac 12\right), \Delta\left(i_d+\frac 12\right)  \right)$$
 
